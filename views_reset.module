@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * Implements hook_menu()
+ */
+function views_reset_menu() {
+  $items = array();
+  $items['admin/structure/views/settings/reset'] = array(
+    'title' => 'Views Reset',
+    'description' => 'Manage Views Reset',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('views_reset_config_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer views'),
+    'file' => 'views_reset.admin-page.inc',
+    'file path' => drupal_get_path('module', 'views_reset') . '/pages',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ */
+function views_reset_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
+  $view_names = array_keys(array_filter(variable_get('views_reset_views', array())));
+  if (in_array($form_state['view']->name, $view_names)) {
+    $form['reset_link'] = array(
+      '#type' => 'link',
+      '#title' => t('Reset'),
+      // 'bp_original_q parameter will be present for views configured
+      // to show on page manger panes with breakpoints.
+      // Please refer code on breakpoint_panels.
+      '#href' => isset($_GET['bp_original_q']) ? $_GET['bp_original_q'] : current_path(),
+      '#attributes' => array('class' => array('reset-link-button')),
+    );
+    if (isset($form['submit']['#weight'])) {
+      $form['reset_link']['#weight'] = intval($form['submit']['#weight']) + 1;
+    }
+  }
+}
