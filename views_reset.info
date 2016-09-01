@@ -2,5 +2,5 @@ name = Views Reset
 description = Helps to add simple Reset button in views exposed forms.
 core = 7.x
 package = Views
-configure = admin/config/views-reset
+configure = admin/structure/views/settings/reset
 dependencies[] = views
